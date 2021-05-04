@@ -1,8 +1,4 @@
-//
-// Created by chesh on 03.05.2021.
-//
-
-#include "code_reader.hpp"
+#include "code_reader.h"
 
 int main(){
   compiler::CodeReader a;
