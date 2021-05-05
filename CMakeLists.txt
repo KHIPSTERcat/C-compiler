@@ -3,7 +3,8 @@ project(C-compiler)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories("Reader/" "Core/")
+
+include_directories("Reader/" "Reader/test" "Core/")
 
 set(READER_SOURCE Reader/code_reader.h)
 set(CORE_SOURCE Core/compiler.cpp)
