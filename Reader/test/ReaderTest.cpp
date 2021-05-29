@@ -8,9 +8,13 @@ TEST_CASE( "Reader Test", "[reader]" ) {
 
   SECTION("getCodeChar()"){
     REQUIRE( Reader.getCodeChar() == 'a' );
+    REQUIRE( Reader.getPosition().first == 1);
+    REQUIRE( Reader.getPosition().second == 1);
     Reader.nextCodeChar();
     REQUIRE( Reader.getCodeChar() == 's' );
     Reader.nextCodeChar();
+    REQUIRE( Reader.getPosition().first == 1);
+    REQUIRE( Reader.getPosition().second == 3);
     REQUIRE( Reader.getCodeChar() == ' ' );
   }
   SECTION("nextSignificantChar()"){
@@ -23,6 +27,8 @@ TEST_CASE( "Reader Test", "[reader]" ) {
   }
   SECTION("nextSignificantChar() -> nextCodeChar()"){
     Reader.nextCodeChar();
+    REQUIRE( Reader.getPosition().first == 2);
+    REQUIRE( Reader.getPosition().second == 2);
     REQUIRE( Reader.getCodeChar() == '2' );
   }
 

@@ -11,7 +11,8 @@ size_t compiler::CodeReader::readFromFile() {
   return fread(buff, sizeof(char), buffSize, file);
 }
 
-compiler::CodeReader::CodeReader(std::string fileName, size_t buffSize):fileName(fileName),buffSize(buffSize),buffIterator(0) {
+compiler::CodeReader::CodeReader(std::string fileName, size_t buffSize):fileName(fileName),buffSize(buffSize),buffIterator(0),stringPosition(1),charPosition(1),file(
+    nullptr) {
   try {
     openFile(fileName);
   } catch (const char* msg) {
@@ -33,6 +34,12 @@ char compiler::CodeReader::getCodeChar() {
 
 void compiler::CodeReader::nextCodeChar() {
   if (readSize){
+    if (getCodeChar() == '\n'){
+      stringPosition++;
+      charPosition = 1;
+    } else {
+      charPosition++;
+    }
     buffIterator++;
     if (buffIterator == readSize){
       readSize = readFromFile();
@@ -54,4 +61,8 @@ void compiler::CodeReader::nextSignificantChar() {
         return;
     }
   }
+}
+
+std::pair<size_t, size_t> compiler::CodeReader::getPosition() {
+  return std::pair<size_t, size_t>(stringPosition,charPosition);
 }
