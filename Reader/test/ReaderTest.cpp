@@ -1,5 +1,5 @@
 #include "../Catch/catch.h"
-#include "code_reader.h"
+#include "../code_reader.h"
 #define CATCH_CONFIG_MAIN
 
 compiler::CodeReader Reader("input.txt");

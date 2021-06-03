@@ -29,4 +29,44 @@ class LexerToken{
 };
 
 
+class IntLexerToken: public LexerToken{
+ private:
+  int tokenValue;
+
+ public:
+  IntLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, int value);
+  int getValue();
+
+};
+
+class FloatLexerToken: public LexerToken{
+ private:
+  float tokenValue;
+
+ public:
+  FloatLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, float value);
+  float getValue();
+
+};
+
+class StringLexerToken: public LexerToken{
+ private:
+  std::string tokenValue;
+
+ public:
+  StringLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, std::string value);
+  std::string getValue();
+
+};
+
+class CharLexerToken: public LexerToken{
+ private:
+  char tokenValue;
+
+ public:
+  CharLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, char value);
+  char getValue();
+
+};
+
 }
