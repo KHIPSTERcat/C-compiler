@@ -50,15 +50,11 @@ void compiler::CodeReader::nextCodeChar() {
 void compiler::CodeReader::nextSignificantChar() {
   nextCodeChar();
   while (true){
-    switch (getCodeChar()) {
-      case ' ':
-        nextCodeChar();
-        break;
-      case '\n':
-        nextCodeChar();
-        break;
-      default:
-        return;
+    char symbol = getCodeChar();
+    if (( symbol > 8 && symbol < 13) || (symbol == 32)){
+      nextCodeChar();
+    } else {
+      break;
     }
   }
 }
