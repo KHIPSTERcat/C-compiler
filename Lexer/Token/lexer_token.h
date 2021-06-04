@@ -24,7 +24,7 @@ class LexerToken{
  public:
   TokenType getType();
   std::pair<size_t, size_t> getPosition();
-  std::string getCodeString;
+  std::string getCodeString();
 
 };
 
