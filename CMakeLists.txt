@@ -16,14 +16,9 @@ add_library(TokenLib Lexer/Token/lexer_token.cpp Lexer/Token/lexer_token.h)
 add_executable(C-compiler Core/compiler.cpp)
 
 add_executable(ReaderTest Reader/test/ReaderTest.cpp)
-target_link_libraries(ReaderTest ReaderLib)
+target_link_libraries(ReaderTest ReaderLib CatchLib)
 
 add_executable(TokenTest Lexer/Token/Test/token_test.cpp)
-target_link_libraries(TokenTest TokenLib)
+target_link_libraries(TokenTest TokenLib CatchLib)
 
 
-set(TEST_TARGETS
-        ReaderTest
-)
-
-target_link_libraries(${TEST_TARGETS} CatchLib)
