@@ -5,7 +5,13 @@ compiler::LexerToken::LexerToken(std::pair<size_t, size_t> position,
                                  compiler::TokenType type):
                                  tokenType(type),
                                  tokenPosition(position),
-                                 tokenCodeString(codeString) {}
+                                 tokenCodeString(codeString) {
+
+}
+
+std::string compiler::LexerToken::toString() {
+  return "All is fine(No)";
+}
 
 std::pair<size_t, size_t> compiler::LexerToken::getPosition() {
   return tokenPosition;
@@ -32,6 +38,7 @@ std::string compiler::LexerToken::typeToString() {
     case TokenType::kChar: return "CHAR";
     case TokenType::kNone: return "NONE";
   }
+  return "Error";
 }
 
 compiler::IntLexerToken::IntLexerToken(std::pair<size_t, size_t> position,
@@ -46,6 +53,12 @@ int compiler::IntLexerToken::getValue() {
   return tokenValue;
 }
 
+std::string compiler::IntLexerToken::toString() {
+  return std::to_string(getPosition().first) + " "
+  + std::to_string(getPosition().second) + " "
+  + typeToString() + " " + std::to_string(getValue())
+  + " " + getCodeString();
+}
 
 compiler::FloatLexerToken::FloatLexerToken(std::pair<size_t, size_t> position,
                                            std::string codeString,
@@ -58,6 +71,13 @@ compiler::FloatLexerToken::FloatLexerToken(std::pair<size_t, size_t> position,
 
 float compiler::FloatLexerToken::getValue() {
   return tokenValue;
+}
+
+std::string compiler::FloatLexerToken::toString() {
+  return std::to_string(getPosition().first) + " "
+      + std::to_string(getPosition().second) + " "
+      + typeToString() + " " + std::to_string(getValue())
+      + " " + getCodeString();
 }
 
 compiler::CharLexerToken::CharLexerToken(std::pair<size_t, size_t> position,
@@ -73,6 +93,13 @@ char compiler::CharLexerToken::getValue() {
   return tokenValue;
 }
 
+std::string compiler::CharLexerToken::toString() {
+  return std::to_string(getPosition().first) + " "
+      + std::to_string(getPosition().second) + " "
+      + typeToString() + " " + getValue()
+      + " " + getCodeString();
+}
+
 compiler::StringLexerToken::StringLexerToken(std::pair<size_t, size_t> position,
                                              std::string codeString,
                                              compiler::TokenType type,
@@ -84,4 +111,11 @@ compiler::StringLexerToken::StringLexerToken(std::pair<size_t, size_t> position,
 
 std::string compiler::StringLexerToken::getValue() {
   return tokenValue;
+}
+
+std::string compiler::StringLexerToken::toString() {
+  return std::to_string(getPosition().first) + " "
+      + std::to_string(getPosition().second) + " "
+      + typeToString() + " " + getValue()
+      + " " + getCodeString();
 }

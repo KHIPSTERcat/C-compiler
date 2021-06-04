@@ -21,6 +21,8 @@ class LexerToken{
   TokenType tokenType;
   std::pair<size_t, size_t> tokenPosition;
   std::string tokenCodeString;
+
+ protected:
   std::string typeToString();
 
  public:
@@ -42,6 +44,7 @@ class IntLexerToken: public LexerToken{
  public:
   IntLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, int value);
   int getValue();
+  std::string toString() override;
 
 };
 
@@ -52,6 +55,7 @@ class FloatLexerToken: public LexerToken{
  public:
   FloatLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, float value);
   float getValue();
+  std::string toString() override;
 
 };
 
@@ -62,6 +66,7 @@ class StringLexerToken: public LexerToken{
  public:
   StringLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, std::string value);
   std::string getValue();
+  std::string toString() override;
 
 };
 
@@ -72,6 +77,7 @@ class CharLexerToken: public LexerToken{
  public:
   CharLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, char value);
   char getValue();
+  std::string toString() override;
 
 };
 
