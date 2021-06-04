@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace compiler{
 
@@ -20,11 +21,16 @@ class LexerToken{
   TokenType tokenType;
   std::pair<size_t, size_t> tokenPosition;
   std::string tokenCodeString;
+  std::string typeToString();
 
  public:
+  LexerToken(std::pair<size_t, size_t> position,
+             std::string codeString,
+             compiler::TokenType type);
   TokenType getType();
   std::pair<size_t, size_t> getPosition();
   std::string getCodeString();
+  virtual std::string toString();
 
 };
 

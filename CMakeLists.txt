@@ -11,11 +11,15 @@ set(CORE_SOURCE Core/compiler.cpp)
 
 add_library(CatchLib Catch/catch.h Catch/catch.cpp)
 add_library(ReaderLib Reader/code_reader.cpp Reader/code_reader.h)
+add_library(TokenLib Lexer/Token/lexer_token.cpp Lexer/Token/lexer_token.h)
 
 add_executable(C-compiler Core/compiler.cpp)
 
 add_executable(ReaderTest Reader/test/ReaderTest.cpp)
 target_link_libraries(ReaderTest ReaderLib)
+
+add_executable(TokenTest Lexer/Token/Test/token_test.cpp)
+target_link_libraries(TokenTest TokenLib)
 
 
 set(TEST_TARGETS
