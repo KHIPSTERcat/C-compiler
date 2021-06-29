@@ -37,8 +37,8 @@ std::string compiler::LexerToken::typeToString() {
     case TokenType::kOperator: return "OPERATOR";
     case TokenType::kChar: return "CHAR";
     case TokenType::kNone: return "NONE";
+    default: return "ERROR";
   }
-  return "Error";
 }
 
 compiler::IntLexerToken::IntLexerToken(std::pair<size_t, size_t> position,

@@ -13,7 +13,8 @@ enum class TokenType {
   kKeyword,
   kOperator,
   kEOF,
-  kSeparator
+  kSeparator,
+  kError
 };
 
 class LexerToken{
