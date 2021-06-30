@@ -3,7 +3,10 @@
 int main(){
 
   compiler::LexerParser  a("input.txt");
-  std::cout<<(a.nextToken())->toString() << std::endl;
-  std::cout<<(a.nextToken())->toString();
+  while (a.getToken()->getType() != compiler::TokenType::kEOF){
+    std::cout<<(a.nextToken())->toString() << std::endl;
+  }
+
+
   return 0;
 }

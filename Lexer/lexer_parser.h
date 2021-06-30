@@ -14,8 +14,16 @@ class LexerParser{
   CodeReader codeReader;
   TokenShareType  nowToken;
 
+  int operatorType(char sign);
+  bool isNoNumber(char sign);
+  bool isNumber(char sign);
+
+  void lineCommentSkip();
+  void commentSkip(std::pair<size_t,size_t> position);
   TokenShareType getEofToken();
   TokenShareType getErrorToken();
+  TokenShareType getOperatorToken(std::pair<size_t,size_t> position, std::string codeString);
+  TokenShareType getOperatorToken();
 
  public:
   LexerParser(std::string fileName);
