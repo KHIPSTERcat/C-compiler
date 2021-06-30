@@ -14,6 +14,7 @@ set(CORE_SOURCE Core/compiler.cpp)
 add_library(CatchLib Catch/catch.h Catch/catch.cpp)
 add_library(ReaderLib Reader/code_reader.cpp Reader/code_reader.h)
 add_library(TokenLib Lexer/Token/lexer_token.cpp Lexer/Token/lexer_token.h)
+add_library(LexerLib Lexer/lexer_parser.cpp Lexer/lexer_parser.h)
 
 add_executable(C-compiler Core/compiler.cpp)
 
@@ -23,4 +24,6 @@ target_link_libraries(ReaderTest ReaderLib CatchLib)
 add_executable(TokenTest Lexer/Token/Test/token_test.cpp)
 target_link_libraries(TokenTest TokenLib CatchLib)
 
+add_executable(LexerTest Lexer/Test/lexer_test.cpp)
+target_link_libraries(LexerTest CatchLib LexerLib ReaderLib TokenLib)
 
