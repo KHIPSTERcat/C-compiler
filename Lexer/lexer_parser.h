@@ -24,7 +24,7 @@ class LexerParser{
   int octalToDecimal(char octal);
   int hexToDecimal(std::string hex);
   int hexToDecimal(char hex);
-  char getEscapeSequence(std::pair<size_t,size_t> &position, std::string &codeString);
+  char getEscapeSequence(std::pair<size_t,size_t> position, std::string &codeString);
   TokenShareType getEofToken();
   TokenShareType getErrorToken();
   TokenShareType getOperatorToken(std::pair<size_t,size_t> &position, std::string &codeString);
@@ -32,6 +32,8 @@ class LexerParser{
   TokenShareType getLToken();
   TokenShareType getCharToken(std::pair<size_t,size_t> position, std::string codeString);
   TokenShareType getCharToken();
+  TokenShareType getStringToken(std::pair<size_t,size_t> position, std::string codeString);
+  TokenShareType getStringToken();
 
  public:
   LexerParser(std::string fileName);

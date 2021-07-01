@@ -24,6 +24,9 @@ compiler::TokenShareType compiler::LexerParser::nextToken() {
   } else if (codeReader.getCodeChar() == '\''){
     nowToken = getCharToken();
     return nowToken;
+  } else if (codeReader.getCodeChar() == '\"'){
+    nowToken = getStringToken();
+    return nowToken;
   }
 
 
@@ -464,7 +467,7 @@ int compiler::LexerParser::hexToDecimal(char hex) {
 }
 
 
-char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> &position, std::string &codeString) {
+char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position, std::string &codeString) {
   std::string escapeSequence = "";
   escapeSequence.push_back(codeReader.getCodeChar());
   codeString.push_back(codeReader.getCodeChar());
@@ -590,10 +593,10 @@ char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> &positio
 compiler::TokenShareType compiler::LexerParser::getLToken() {
   std::string codeString = "L";
   auto position = codeReader.getPosition();
-    if (codeReader.getCodeChar() == '\''){
-      return getCharToken(position, codeString);
-    }
-
+  if (codeReader.getCodeChar() == '\''){
+    return getCharToken(position, codeString);
+  }
+  return getStringToken(position, codeString);
 }
 
 compiler::TokenShareType compiler::LexerParser::getCharToken() {
@@ -621,8 +624,18 @@ compiler::TokenShareType compiler::LexerParser::getCharToken(std::pair<size_t, s
           + std::to_string(position.second);
       exit(1);
     }
+    case -1:{
+      std::cout << "Unknown constant char on " + std::to_string(position.first) + " "
+          + std::to_string(position.second);
+      exit(1);
+    }
+    case '/':{
+      std::cout << "Unknown constant char on " + std::to_string(position.first) + " "
+          + std::to_string(position.second);
+      exit(1);
+    }
     case '\\':{
-      value = getEscapeSequence(position,codeString);
+      value = getEscapeSequence(codeReader.getPosition(),codeString);
       break;
     }
     default:{
@@ -632,7 +645,6 @@ compiler::TokenShareType compiler::LexerParser::getCharToken(std::pair<size_t, s
       break;
     }
   }
-  auto tmp = codeReader.getCodeChar();
 
   if (codeReader.getCodeChar() == '\''){
     codeString.push_back(codeReader.getCodeChar());
@@ -643,4 +655,54 @@ compiler::TokenShareType compiler::LexerParser::getCharToken(std::pair<size_t, s
   std::cout << "Multi-char constant char on " + std::to_string(position.first) + " "
       + std::to_string(position.second);
   exit(1);
+}
+
+compiler::TokenShareType compiler::LexerParser::getStringToken() {
+  return getStringToken(codeReader.getPosition(),"");
+}
+
+
+compiler::TokenShareType compiler::LexerParser::getStringToken(std::pair<size_t, size_t> position, std::string codeString) {
+  if (codeReader.getCodeChar() != '\"'){
+    std::cout << "Unknown string on " + std::to_string(position.first) + " "
+        + std::to_string(position.second);
+    exit(1);
+  }
+  codeString.push_back(codeReader.getCodeChar());
+  codeReader.nextCodeChar();
+  std::string value = "";
+  for (;codeReader.getCodeChar() != '\"';){
+    switch (codeReader.getCodeChar()) {
+      case '\n':{
+        std::cout << "Unknown string on " + std::to_string(position.first) + " "
+            + std::to_string(position.second);
+        exit(1);
+      }
+      case -1:{
+        std::cout << "Unknown string on " + std::to_string(position.first) + " "
+            + std::to_string(position.second);
+        exit(1);
+      }
+      case '/':{
+        std::cout << "Unknown string on " + std::to_string(position.first) + " "
+            + std::to_string(position.second);
+        exit(1);
+      }
+      case '\\':{
+        value.push_back(getEscapeSequence(codeReader.getPosition(),codeString));
+        break;
+      }
+      default:{
+        value.push_back(codeReader.getCodeChar());
+        codeString.push_back(codeReader.getCodeChar());
+        codeReader.nextCodeChar();
+        break;
+      }
+    }
+  }
+  codeString.push_back(codeReader.getCodeChar());
+  codeReader.nextCodeChar();
+  return TokenShareType(new StringLexerToken(position ,codeString,
+                                           compiler::TokenType::kString, value));
+
 }
