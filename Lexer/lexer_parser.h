@@ -4,6 +4,7 @@
 #include "../Reader/code_reader.h"
 #include <iostream>
 #include <memory>
+#include <map>
 
 namespace compiler{
 
@@ -13,6 +14,7 @@ class LexerParser{
  private:
   CodeReader codeReader;
   TokenShareType  nowToken;
+  std::map<std::string,compiler::TokenType> dictionary;
 
   int operatorType(char sign);
   bool isNoNumber(char sign);
@@ -25,11 +27,14 @@ class LexerParser{
   int hexToDecimal(std::string hex);
   int hexToDecimal(char hex);
   char getEscapeSequence(std::pair<size_t,size_t> position, std::string &codeString);
+  compiler::TokenType getIdentifierType(std::string &identifier);
+
   TokenShareType getEofToken();
   TokenShareType getErrorToken();
   TokenShareType getOperatorToken(std::pair<size_t,size_t> &position, std::string &codeString);
   TokenShareType getOperatorToken();
   TokenShareType getLToken();
+  TokenShareType getIdentifierOrKeywordOrLToken();
   TokenShareType getCharToken(std::pair<size_t,size_t> position, std::string codeString);
   TokenShareType getCharToken();
   TokenShareType getStringToken(std::pair<size_t,size_t> position, std::string codeString);

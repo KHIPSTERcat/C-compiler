@@ -1,6 +1,38 @@
 #include "lexer_parser.h"
 
 compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
+  dictionary["auto"] = compiler::TokenType::kKeyword;
+  dictionary["double"] = compiler::TokenType::kKeyword;
+  dictionary["int"] = compiler::TokenType::kKeyword;
+  dictionary["struct"] = compiler::TokenType::kKeyword;
+  dictionary["break"] = compiler::TokenType::kKeyword;
+  dictionary["else"] = compiler::TokenType::kKeyword;
+  dictionary["long"] = compiler::TokenType::kKeyword;
+  dictionary["switch"] = compiler::TokenType::kKeyword;
+  dictionary["case"] = compiler::TokenType::kKeyword;
+  dictionary["enum"] = compiler::TokenType::kKeyword;
+  dictionary["register"] = compiler::TokenType::kKeyword;
+  dictionary["typedef"] = compiler::TokenType::kKeyword;
+  dictionary["char"] = compiler::TokenType::kKeyword;
+  dictionary["extern"] = compiler::TokenType::kKeyword;
+  dictionary["return"] = compiler::TokenType::kKeyword;
+  dictionary["union"] = compiler::TokenType::kKeyword;
+  dictionary["const"] = compiler::TokenType::kKeyword;
+  dictionary["float"] = compiler::TokenType::kKeyword;
+  dictionary["short"] = compiler::TokenType::kKeyword;
+  dictionary["unsigned"] = compiler::TokenType::kKeyword;
+  dictionary["continue"] = compiler::TokenType::kKeyword;
+  dictionary["for"] = compiler::TokenType::kKeyword;
+  dictionary["signed"] = compiler::TokenType::kKeyword;
+  dictionary["void"] = compiler::TokenType::kKeyword;
+  dictionary["default"] = compiler::TokenType::kKeyword;
+  dictionary["goto"] = compiler::TokenType::kKeyword;
+  dictionary["sizeof"] = compiler::TokenType::kOperator;
+  dictionary["volatile"] = compiler::TokenType::kKeyword;
+  dictionary["do"] = compiler::TokenType::kKeyword;
+  dictionary["if"] = compiler::TokenType::kKeyword;
+  dictionary["static"] = compiler::TokenType::kKeyword;
+  dictionary["while"] = compiler::TokenType::kKeyword;
   nowToken = nextToken();
 }
 
@@ -26,6 +58,9 @@ compiler::TokenShareType compiler::LexerParser::nextToken() {
     return nowToken;
   } else if (codeReader.getCodeChar() == '\"'){
     nowToken = getStringToken();
+    return nowToken;
+  } else if (isNoNumber(codeReader.getCodeChar())) {
+    nowToken = getIdentifierOrKeywordOrLToken();
     return nowToken;
   }
 
@@ -704,5 +739,30 @@ compiler::TokenShareType compiler::LexerParser::getStringToken(std::pair<size_t,
   codeReader.nextCodeChar();
   return TokenShareType(new StringLexerToken(position ,codeString,
                                            compiler::TokenType::kString, value));
+}
 
+compiler::TokenShareType compiler::LexerParser::getIdentifierOrKeywordOrLToken() {
+  auto position = codeReader.getPosition();
+  std::string value = "";
+  std::string codeString = "";
+  if (codeReader.getCodeChar() == 'L'){
+    value.push_back(codeReader.getCodeChar());
+    codeString.push_back(codeReader.getCodeChar());
+    if (codeReader.getCodeChar() == '\'' || codeReader.getCodeChar() == '\"')
+      return getLToken();
+  }
+  for (;isNoNumber(codeReader.getCodeChar()) || isNumber(codeReader.getCodeChar());){
+    value.push_back(codeReader.getCodeChar());
+    codeString.push_back(codeReader.getCodeChar());
+    codeReader.nextCodeChar();
+  }
+  return TokenShareType(new StringLexerToken(position ,codeString,
+                                             getIdentifierType(value), value));
+}
+
+compiler::TokenType compiler::LexerParser::getIdentifierType(std::string &identifier) {
+  if (dictionary.count(identifier)){
+    return dictionary[identifier];
+  }
+  return compiler::TokenType::kIdentifier;
 }
