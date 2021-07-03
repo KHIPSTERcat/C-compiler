@@ -39,6 +39,8 @@ class LexerParser{
   TokenShareType getCharToken();
   TokenShareType getStringToken(std::pair<size_t,size_t> position, std::string codeString);
   TokenShareType getStringToken();
+  TokenShareType getIntOrFloatToken();
+  TokenShareType getIntOrFloatToken(std::pair<size_t,size_t> position, std::string codeString);
 
  public:
   LexerParser(std::string fileName);

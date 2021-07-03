@@ -2,7 +2,7 @@ abv
 { } ;
 int auto floatr
 _asd
-12ad
+12. ad
 10 // sdasdad
 +( -- /*/
 - */->
@@ -10,3 +10,10 @@ S 'a' '\n' '?' '\123' '\x40'
 
 "" " 1 2 3" "a\na" "aba"
 """"
+12. 12.f 12.l .5 5e+1
+5e-10 12.F 12.L
+010 0X10 0x10
+000 0 010UL+0X10LU
+sizeof(int)
+010Ul+0X10Lu
+017
