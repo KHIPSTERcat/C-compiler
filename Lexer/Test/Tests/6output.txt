@@ -1,0 +1,55 @@
+1 1 KEYWORD int int
+1 5 INDENTIFIER main main
+1 9 OPERATOR ( (
+1 10 OPERATOR ) )
+1 12 OPERATOR { {
+3 5 KEYWORD int int
+3 9 INDENTIFIER number1 number1
+3 16 OPERATOR , ,
+3 18 INDENTIFIER number2 number2
+3 25 OPERATOR , ,
+3 27 INDENTIFIER sum sum
+3 30 OPERATOR ; ;
+5 5 INDENTIFIER printf printf
+5 11 OPERATOR ( (
+5 12 STRING Enter two integers:  "Enter two integers: "
+5 34 OPERATOR ) )
+5 35 OPERATOR ; ;
+6 5 INDENTIFIER scanf scanf
+6 10 OPERATOR ( (
+6 11 STRING %d %d "%d %d"
+6 18 OPERATOR , ,
+6 20 OPERATOR & &
+6 21 INDENTIFIER number1 number1
+6 28 OPERATOR , ,
+6 30 OPERATOR & &
+6 31 INDENTIFIER number2 number2
+6 38 OPERATOR ) )
+6 39 OPERATOR ; ;
+7 5 KEYWORD int int
+7 9 INDENTIFIER a a
+7 11 OPERATOR = =
+7 13 INT 10 10
+7 15 OPERATOR ; ;
+9 5 INDENTIFIER sum sum
+9 9 OPERATOR = =
+9 11 INDENTIFIER number1 number1
+9 19 OPERATOR + +
+9 21 INDENTIFIER number2 number2
+9 28 OPERATOR ; ;
+13 5 INDENTIFIER printf printf
+13 11 OPERATOR ( (
+13 12 STRING %d + %d = %d "%d + %d = %d"
+13 26 OPERATOR , ,
+13 28 INDENTIFIER number1 number1
+13 35 OPERATOR , ,
+13 37 INDENTIFIER number2 number2
+13 44 OPERATOR , ,
+13 46 INDENTIFIER sum sum
+13 49 OPERATOR ) )
+13 50 OPERATOR ; ;
+14 5 KEYWORD return return
+14 12 INT 0 0
+14 13 OPERATOR ; ;
+15 1 OPERATOR } }
+15 2 EOF EOF 

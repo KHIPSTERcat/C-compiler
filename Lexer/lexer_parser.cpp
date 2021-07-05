@@ -155,7 +155,17 @@ compiler::TokenShareType compiler::LexerParser::getOperatorToken() {
 
     case 2: {
       codeReader.nextCodeChar();
-      return getOperatorToken(position, codeString);
+      switch (operatorType(codeReader.getCodeChar())) {
+        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
+                                                           compiler::TokenType::kOperator, codeString));
+        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
+                                                           compiler::TokenType::kOperator, codeString));
+        default: {
+          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
+              + std::to_string(position.second) + "!";
+          exit(1);
+        }
+      }
     }
 
     case 3:{
@@ -441,7 +451,17 @@ compiler::TokenShareType compiler::LexerParser::getOperatorToken() {
       if (isNumber(codeReader.getCodeChar())){
         return getIntOrFloatToken(position,codeString);
       }
-      return getOperatorToken(position, codeString);
+      switch (operatorType(codeReader.getCodeChar())) {
+        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
+                                                           compiler::TokenType::kOperator, codeString));
+        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
+                                                           compiler::TokenType::kOperator, codeString));
+        default: {
+          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
+              + std::to_string(position.second) + "!";
+          exit(1);
+        }
+      }
     }
 
   }
@@ -759,6 +779,7 @@ compiler::TokenShareType compiler::LexerParser::getIdentifierOrKeywordOrLToken()
   if (codeReader.getCodeChar() == 'L'){
     value.push_back(codeReader.getCodeChar());
     codeString.push_back(codeReader.getCodeChar());
+    codeReader.nextCodeChar();
     if (codeReader.getCodeChar() == '\'' || codeReader.getCodeChar() == '\"')
       return getLToken();
   }

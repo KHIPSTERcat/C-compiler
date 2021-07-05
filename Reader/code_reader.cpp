@@ -1,4 +1,5 @@
 #include "code_reader.h"
+#include <exception>
 
 void compiler::CodeReader::openFile(std::string fileName) {
   if ((this->file = std::fopen(fileName.c_str(),"r")) == nullptr){

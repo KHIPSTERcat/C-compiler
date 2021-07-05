@@ -1,0 +1,20 @@
+1 2 STRING asd
+asd L"asd\nasd"
+4 1 STRING   " "
+5 1 CHAR a 'a'
+6 1 CHAR  '\a'
+7 1 CHAR  '\b'
+8 1 CHAR  '\f'
+9 1 CHAR 
+ '\n'
+10 2 CHAR  L'\r'
+11 1 CHAR 	 '\t'
+12 1 CHAR  '\v'
+13 1 CHAR S '\123'
+14 1 CHAR P '\x50'
+15 1 CHAR \ '\\'
+16 1 CHAR ? '\?'
+17 1 CHAR ' '\''
+18 1 CHAR " '\"'
+19 2 CHAR a L'a'
+19 5 EOF EOF 
