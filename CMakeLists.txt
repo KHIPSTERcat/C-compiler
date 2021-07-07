@@ -15,6 +15,7 @@ add_library(CatchLib Catch/catch.h Catch/catch.cpp)
 add_library(ReaderLib Reader/code_reader.cpp Reader/code_reader.h)
 add_library(TokenLib Lexer/Token/lexer_token.cpp Lexer/Token/lexer_token.h)
 add_library(LexerLib Lexer/lexer_parser.cpp Lexer/lexer_parser.h)
+add_library(AnalyzerLib Analyzer/analyzer.cpp Analyzer/analyzer.h)
 
 add_executable(C-compiler Core/compiler.cpp)
 
