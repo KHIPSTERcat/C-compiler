@@ -24,7 +24,7 @@
 6 34 KEYWORD void void
 7 1 KEYWORD default default
 7 12 KEYWORD goto goto
-7 23 OPERATOR sizeof sizeof
+7 23 KEYWORD sizeof sizeof
 7 34 KEYWORD volatile volatile
 8 1 KEYWORD do do
 8 12 KEYWORD if if

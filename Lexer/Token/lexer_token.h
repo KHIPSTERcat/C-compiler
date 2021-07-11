@@ -14,7 +14,44 @@ enum class TokenType {
   kOperator,
   kEOF,
   kSeparator,
-  kError
+  kError,
+};
+
+
+
+enum class KeywordType {
+  kAuto = 0,
+  kDouble,
+  kInt,
+  kStruct,
+  kBreak,
+  kElse,
+  kLong,
+  kSwitch,
+  kCase,
+  kEnum,
+  kRegister,
+  kTypedef,
+  kChar,
+  kExtern,
+  kReturn,
+  kUnion,
+  kConst,
+  kFloat,
+  kShort,
+  kUnsigned,
+  kContinue,
+  kFor,
+  kSigned,
+  kVoid,
+  kDefault,
+  kGoto,
+  kSizeof,
+  kVolatile,
+  kDo,
+  kIf,
+  kStatic,
+  kWhile,
 };
 
 class LexerToken{
@@ -78,6 +115,17 @@ class CharLexerToken: public LexerToken{
  public:
   CharLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, char value);
   char getValue();
+  std::string toString() override;
+
+};
+
+class KeywordLexerToken: public LexerToken{
+ private:
+  compiler::KeywordType tokenValue;
+
+ public:
+  KeywordLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, compiler::KeywordType value);
+  compiler::KeywordType getValue();
   std::string toString() override;
 
 };

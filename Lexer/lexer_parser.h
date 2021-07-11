@@ -14,20 +14,20 @@ class LexerParser{
  private:
   CodeReader codeReader;
   TokenShareType  nowToken;
-  std::map<std::string,compiler::TokenType> dictionary;
+  std::map<std::string,compiler::KeywordType> keywordDictionary;
+
 
   int operatorType(char sign);
   bool isNoNumber(char sign);
   bool isNumber(char sign);
 
   void lineCommentSkip();
-  void commentSkip(std::pair<size_t,size_t> &position);
+  void multiLineCommentSkip(std::pair<size_t,size_t> &position);
   int octalToDecimal(std::string octal);
   int octalToDecimal(char octal);
   int hexToDecimal(std::string hex);
   int hexToDecimal(char hex);
   char getEscapeSequence(std::pair<size_t,size_t> position, std::string &codeString);
-  compiler::TokenType getIdentifierType(std::string &identifier);
 
   TokenShareType getEofToken();
   TokenShareType getErrorToken();

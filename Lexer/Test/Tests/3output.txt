@@ -12,7 +12,7 @@
 2 18 OPERATOR - -
 2 21 OPERATOR ~ ~
 2 24 OPERATOR ! !
-2 27 OPERATOR sizeof sizeof
+2 27 KEYWORD sizeof sizeof
 3 1 OPERATOR / /
 3 4 OPERATOR % %
 3 7 OPERATOR << <<
@@ -75,7 +75,7 @@
 9 28 OPERATOR ( (
 9 31 OPERATOR ! !
 9 32 OPERATOR ) )
-9 35 OPERATOR sizeof sizeof
+9 35 KEYWORD sizeof sizeof
 9 41 OPERATOR ( (
 10 1 OPERATOR / /
 10 2 OPERATOR ( (

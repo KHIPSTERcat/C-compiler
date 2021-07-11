@@ -1,38 +1,35 @@
 #include "lexer_parser.h"
 
 compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
-  dictionary["auto"] = compiler::TokenType::kKeyword;
-  dictionary["double"] = compiler::TokenType::kKeyword;
-  dictionary["int"] = compiler::TokenType::kKeyword;
-  dictionary["struct"] = compiler::TokenType::kKeyword;
-  dictionary["break"] = compiler::TokenType::kKeyword;
-  dictionary["else"] = compiler::TokenType::kKeyword;
-  dictionary["long"] = compiler::TokenType::kKeyword;
-  dictionary["switch"] = compiler::TokenType::kKeyword;
-  dictionary["case"] = compiler::TokenType::kKeyword;
-  dictionary["enum"] = compiler::TokenType::kKeyword;
-  dictionary["register"] = compiler::TokenType::kKeyword;
-  dictionary["typedef"] = compiler::TokenType::kKeyword;
-  dictionary["char"] = compiler::TokenType::kKeyword;
-  dictionary["extern"] = compiler::TokenType::kKeyword;
-  dictionary["return"] = compiler::TokenType::kKeyword;
-  dictionary["union"] = compiler::TokenType::kKeyword;
-  dictionary["const"] = compiler::TokenType::kKeyword;
-  dictionary["float"] = compiler::TokenType::kKeyword;
-  dictionary["short"] = compiler::TokenType::kKeyword;
-  dictionary["unsigned"] = compiler::TokenType::kKeyword;
-  dictionary["continue"] = compiler::TokenType::kKeyword;
-  dictionary["for"] = compiler::TokenType::kKeyword;
-  dictionary["signed"] = compiler::TokenType::kKeyword;
-  dictionary["void"] = compiler::TokenType::kKeyword;
-  dictionary["default"] = compiler::TokenType::kKeyword;
-  dictionary["goto"] = compiler::TokenType::kKeyword;
-  dictionary["sizeof"] = compiler::TokenType::kOperator;
-  dictionary["volatile"] = compiler::TokenType::kKeyword;
-  dictionary["do"] = compiler::TokenType::kKeyword;
-  dictionary["if"] = compiler::TokenType::kKeyword;
-  dictionary["static"] = compiler::TokenType::kKeyword;
-  dictionary["while"] = compiler::TokenType::kKeyword;
+  std::string keywords[32] = {"auto","double","int","struct",
+                              "break","else","long","switch",
+                              "case","enum","register","typedef",
+                              "char","extern","return","union",
+                              "const","float","short","unsigned",
+                              "continue","for","signed","void",
+                              "default","goto","sizeof","volatile",
+                              "do","if","static","while"};
+  compiler::KeywordType keywordTypes[32] = {compiler::KeywordType::kAuto, compiler::KeywordType::kDouble,
+                                            compiler::KeywordType::kInt, compiler::KeywordType::kStruct,
+                                            compiler::KeywordType::kBreak, compiler::KeywordType::kElse,
+                                            compiler::KeywordType::kLong, compiler::KeywordType::kSwitch,
+                                            compiler::KeywordType::kCase, compiler::KeywordType::kEnum,
+                                            compiler::KeywordType::kRegister, compiler::KeywordType::kTypedef,
+                                            compiler::KeywordType::kChar, compiler::KeywordType::kExtern,
+                                            compiler::KeywordType::kReturn, compiler::KeywordType::kUnion,
+                                            compiler::KeywordType::kConst, compiler::KeywordType::kFloat,
+                                            compiler::KeywordType::kShort, compiler::KeywordType::kUnsigned,
+                                            compiler::KeywordType::kContinue, compiler::KeywordType::kFor,
+                                            compiler::KeywordType::kSigned, compiler::KeywordType::kVoid,
+                                            compiler::KeywordType::kDefault, compiler::KeywordType::kGoto,
+                                            compiler::KeywordType::kSizeof, compiler::KeywordType::kVolatile,
+                                            compiler::KeywordType::kDo, compiler::KeywordType::kIf,
+                                            compiler::KeywordType::kStatic, compiler::KeywordType::kWhile};
+
+  for (size_t i = 0; i < 32; i++){
+    keywordDictionary[keywords[i]] = keywordTypes[i];
+  }
+
   nowToken = nextToken();
 }
 
@@ -72,9 +69,6 @@ compiler::TokenShareType compiler::LexerParser::nextToken() {
   codeReader.nextSignificantChar();
   return nowToken;
 }
-
-
-
 
 
 
@@ -118,13 +112,11 @@ int compiler::LexerParser::operatorType(char sign) {
 }
 
 bool compiler::LexerParser::isNumber(char sign) {
-  if (sign >= '0' && sign <= '9') return true;
-  return false;
+  return sign >= '0' && sign <= '9';
 }
 
 bool compiler::LexerParser::isNoNumber(char sign) {
-  if ((sign >= 'a' && sign <= 'z') || (sign >= 'A' && sign <= 'Z') || sign == '_') return true;
-  return false;
+  return (sign >= 'a' && sign <= 'z') || (sign >= 'A' && sign <= 'Z') || sign == '_';
 }
 
 compiler::TokenShareType compiler::LexerParser::getOperatorToken(std::pair<size_t, size_t> &position, std::string &codeString) {
@@ -411,7 +403,7 @@ compiler::TokenShareType compiler::LexerParser::getOperatorToken() {
         }
 
         case 12:{
-          commentSkip(position);
+          multiLineCommentSkip(position);
           return nextToken();
         }
 
@@ -477,7 +469,7 @@ void compiler::LexerParser::lineCommentSkip() {
   codeReader.nextCodeChar();
 }
 
-void compiler::LexerParser::commentSkip(std::pair<size_t,size_t> &position) {
+void compiler::LexerParser::multiLineCommentSkip(std::pair<size_t,size_t> &position) {
   while (codeReader.getCodeChar() != -1){
     codeReader.nextCodeChar();
     if (codeReader.getCodeChar() == '*'){
@@ -613,8 +605,8 @@ char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position
       escapeSequence += hexNumber;
       int hexInt = hexToDecimal(hexNumber);
       if (hexInt < 0  || hexInt > 128){
-        std::cout << escapeSequence + "out of range on " + std::to_string(position.first) + " "
-            + std::to_string(position.second) ;
+        std::cout << escapeSequence << "out of range on " << position.first << " "
+            << std::to_string(position.second) ;
         exit(1);
       }
       return char(hexInt);
@@ -749,11 +741,6 @@ compiler::TokenShareType compiler::LexerParser::getStringToken(std::pair<size_t,
             + std::to_string(position.second);
         exit(1);
       }
-      case '/':{
-        std::cout << "Unknown string on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
-        exit(1);
-      }
       case '\\':{
         value.push_back(getEscapeSequence(codeReader.getPosition(),codeString));
         break;
@@ -788,16 +775,15 @@ compiler::TokenShareType compiler::LexerParser::getIdentifierOrKeywordOrLToken()
     codeString.push_back(codeReader.getCodeChar());
     codeReader.nextCodeChar();
   }
+
+  if (keywordDictionary.count(value)){
+    return TokenShareType(new KeywordLexerToken(position ,codeString,
+                                               compiler::TokenType::kKeyword, keywordDictionary[value]));
+  }
   return TokenShareType(new StringLexerToken(position ,codeString,
-                                             getIdentifierType(value), value));
+                                             compiler::TokenType::kIdentifier, value));
 }
 
-compiler::TokenType compiler::LexerParser::getIdentifierType(std::string &identifier) {
-  if (dictionary.count(identifier)){
-    return dictionary[identifier];
-  }
-  return compiler::TokenType::kIdentifier;
-}
 
 compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken() {
   return getIntOrFloatToken(codeReader.getPosition(), "");
