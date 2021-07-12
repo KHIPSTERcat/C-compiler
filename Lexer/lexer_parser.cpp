@@ -25,9 +25,42 @@ compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
                                             compiler::KeywordType::kSizeof, compiler::KeywordType::kVolatile,
                                             compiler::KeywordType::kDo, compiler::KeywordType::kIf,
                                             compiler::KeywordType::kStatic, compiler::KeywordType::kWhile};
+  std::string operators[48] = {"[", "]", "(", ")", ".", "->", "++", "--", "&", "*", "+", "-",
+                               "~", "!", "/", "%", "<<", ">>", "<", ">", "<=",
+                               ">=", "==", "!=", "^", "|", "&&", "||", "?", ":", "=", "*=",
+                               "/=", "%=", "+=", "-=", "<<=", ">>=", "&=",
+                               "^=", "|=", ",", "#", "##", ":>", "{", "}", ";"};
+
+  compiler::OperatorType operatorTypes[48] = {compiler::OperatorType::kLeftSquareBracket, compiler::OperatorType::kRightSquareBracket,
+                                              compiler::OperatorType::kLeftBracket, compiler::OperatorType::kRightBracket,
+                                              compiler::OperatorType::kDot, compiler::OperatorType::kArrow,
+                                              compiler::OperatorType::kPlusPlus, compiler::OperatorType::kMinusMinus,
+                                              compiler::OperatorType::kAmpersand, compiler::OperatorType::kStar,
+                                              compiler::OperatorType::kPlus, compiler::OperatorType::kMinus,
+                                              compiler::OperatorType::kTilda, compiler::OperatorType::kExclamationPoint,
+                                              compiler::OperatorType::kSlash, compiler::OperatorType::kPercent,
+                                              compiler::OperatorType::kDoubleArrowLeftBracket, compiler::OperatorType::kDoubleArrowRightBracket,
+                                              compiler::OperatorType::kArrowLeftBracket, compiler::OperatorType::kArrowRightBracket,
+                                              compiler::OperatorType::kLessOrEqual, compiler::OperatorType::kMoreOrEqual,
+                                              compiler::OperatorType::kDoubleEqual, compiler::OperatorType::kUnEqual,
+                                              compiler::OperatorType::kCaret, compiler::OperatorType::kVerticalLine,
+                                              compiler::OperatorType::kDoubleAmpersand, compiler::OperatorType::kDoubleVerticalLine,
+                                              compiler::OperatorType::kQuestionSign, compiler::OperatorType::kColon,
+                                              compiler::OperatorType::kEqual, compiler::OperatorType::kStarEqual,
+                                              compiler::OperatorType::kSlashEqual, compiler::OperatorType::kPercentEqual,
+                                              compiler::OperatorType::kPlusEqual, compiler::OperatorType::kMinusEqual,
+                                              compiler::OperatorType::kDoubleArrowLeftBracketEqual, compiler::OperatorType::kDoubleArrowRightBracketEqual,
+                                              compiler::OperatorType::kAmpersandEqual, compiler::OperatorType::kCaretEqual,
+                                              compiler::OperatorType::kVerticalLineEqual, compiler::OperatorType::kComma,
+                                              compiler::OperatorType::kNumberSign, compiler::OperatorType::kDoubleNumberSign,
+                                              compiler::OperatorType::kColonArrowRightBracket, compiler::OperatorType::kLeftFigureBracket,
+                                              compiler::OperatorType::kRightFigureBracket, compiler::OperatorType::kSemicolon,};
 
   for (size_t i = 0; i < 32; i++){
     keywordDictionary[keywords[i]] = keywordTypes[i];
+  }
+  for (size_t i = 0; i < 48; i++){
+    operatorDictionary[operators[i]] = operatorTypes[i];
   }
 
   nowToken = nextToken();
@@ -47,7 +80,7 @@ compiler::TokenShareType compiler::LexerParser::nextToken() {
   if (codeReader.getCodeChar() == -1){
     nowToken = getEofToken();
     return nowToken;
-  } else if (operatorType(codeReader.getCodeChar())){
+  } else if (operatorDictionary.count(std::string(1, codeReader.getCodeChar()))){
     nowToken = getOperatorToken();
     return nowToken;
   } else if (codeReader.getCodeChar() == '\''){
@@ -80,36 +113,6 @@ compiler::TokenShareType compiler::LexerParser::getErrorToken() {
   return TokenShareType(new StringLexerToken(codeReader.getPosition() ,"", compiler::TokenType::kError, "Error"));
 }
 
-int compiler::LexerParser::operatorType(char sign) {
-  switch (sign) {
-    case '!': return 14;
-    case '#': return 9;
-    case '%': return 14;
-    case '&': return 11;
-    case '(': return 1;
-    case ')': return 1;
-    case '*': return 12;
-    case '+': return 4;
-    case ',': return 1;
-    case '-': return 5;
-    case '.': return 15;
-    case ':': return 10;
-    case ';': return 1;
-    case '<': return 7;
-    case '>': return 6;
-    case '=': return 3;
-    case '?': return 2;
-    case '/': return 13;
-    case ']': return 1;
-    case '[': return 1;
-    case '{': return 1;
-    case '}': return 1;
-    case '^': return 14;
-    case '~': return 2;
-    case '|': return 8;
-    default: return 0;
-  }
-}
 
 bool compiler::LexerParser::isNumber(char sign) {
   return sign >= '0' && sign <= '9';
@@ -119,348 +122,30 @@ bool compiler::LexerParser::isNoNumber(char sign) {
   return (sign >= 'a' && sign <= 'z') || (sign >= 'A' && sign <= 'Z') || sign == '_';
 }
 
-compiler::TokenShareType compiler::LexerParser::getOperatorToken(std::pair<size_t, size_t> &position, std::string &codeString) {
-  codeString.push_back(codeReader.getCodeChar());
-  codeReader.nextCodeChar();
-  switch (operatorType(codeReader.getCodeChar())) {
-    case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                       compiler::TokenType::kOperator, codeString));
-    case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                       compiler::TokenType::kOperator, codeString));
-    default: {
-      std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-          + std::to_string(position.second) + "!";
-      exit(1);
-    }
-  }
-}
 
 compiler::TokenShareType compiler::LexerParser::getOperatorToken() {
   std::string codeString = "";
   auto position = codeReader.getPosition();
   codeString.push_back(codeReader.getCodeChar());
-  switch (operatorType(codeReader.getCodeChar())) {
-    case 1: {
-      codeReader.nextCodeChar();
-      return TokenShareType(new StringLexerToken(position ,codeString, compiler::TokenType::kOperator, codeString));
-    }
-
-    case 2: {
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 3:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 4:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        case 4:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 5:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        case 5:{
-          return getOperatorToken(position, codeString);
-        }
-        case 6:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 6:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        case 6:{
-          codeString.push_back(codeReader.getCodeChar());
-          codeReader.nextCodeChar();
-          switch (operatorType(codeReader.getCodeChar())) {
-            case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                               compiler::TokenType::kOperator, codeString));
-            case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                               compiler::TokenType::kOperator, codeString));
-            case 3:{
-              return getOperatorToken(position, codeString);
-            }
-            default: {
-              std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-                  + std::to_string(position.second) + "!";
-              exit(1);
-            }
-          }
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 7:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        case 7:{
-          codeString.push_back(codeReader.getCodeChar());
-          codeReader.nextCodeChar();
-          switch (operatorType(codeReader.getCodeChar())) {
-            case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                               compiler::TokenType::kOperator, codeString));
-            case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                               compiler::TokenType::kOperator, codeString));
-            case 3:{
-              return getOperatorToken(position, codeString);
-            }
-            default: {
-              std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-                  + std::to_string(position.second) + "!";
-              exit(1);
-            }
-          }
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 8:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        case 8:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 9:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 9:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 10:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 6:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 11:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        case 11:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 12:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 13:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-
-        case 12:{
-          multiLineCommentSkip(position);
-          return nextToken();
-        }
-
-        case 13:{
-          lineCommentSkip();
-          return nextToken();
-        }
-
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 14:{
-      codeReader.nextCodeChar();
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 3:{
-          return getOperatorToken(position, codeString);
-        }
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
-    case 15: {
-      codeReader.nextCodeChar();
-      if (isNumber(codeReader.getCodeChar())){
-        return getIntOrFloatToken(position,codeString);
-      }
-      switch (operatorType(codeReader.getCodeChar())) {
-        case 0: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        case 1: return TokenShareType(new StringLexerToken(position ,codeString,
-                                                           compiler::TokenType::kOperator, codeString));
-        default: {
-          std::cout <<  "Operator Error on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) + "!";
-          exit(1);
-        }
-      }
-    }
-
+  codeReader.nextCodeChar();
+  if (isNumber(codeReader.getCodeChar())) {
+    return getIntOrFloatToken(position, codeString);
   }
-
-
+  if (codeReader.getCodeChar() == '*'){
+    multiLineCommentSkip(position);
+    return nextToken();
+  }
+  if (codeReader.getCodeChar() == '/'){
+    lineCommentSkip();
+    return nextToken();
+  }
+  while (operatorDictionary.count(codeString + codeReader.getCodeChar())){
+    codeString.push_back(codeReader.getCodeChar());
+    codeReader.nextCodeChar();
+  }
+  return TokenShareType(new OperatorLexerToken(position ,codeString,
+                                             compiler::TokenType::kOperator, operatorDictionary[codeString]));
 }
-
 
 void compiler::LexerParser::lineCommentSkip() {
   while (codeReader.getCodeChar() != '\n' && codeReader.getCodeChar() != -1){

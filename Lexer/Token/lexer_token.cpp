@@ -139,3 +139,23 @@ std::string compiler::KeywordLexerToken::toString() {
       + typeToString() + " " +  getCodeString()
       + " " + getCodeString();
 }
+
+compiler::OperatorLexerToken::OperatorLexerToken(std::pair<size_t, size_t> position,
+                                               std::string codeString,
+                                               compiler::TokenType type,
+                                               compiler::OperatorType value):
+    LexerToken(position,codeString,type),
+    tokenValue(value) {
+
+}
+
+compiler::OperatorType compiler::OperatorLexerToken::getValue() {
+  return tokenValue;
+}
+
+std::string compiler::OperatorLexerToken::toString() {
+  return std::to_string(getPosition().first) + " "
+      + std::to_string(getPosition().second) + " "
+      + typeToString() + " " +  getCodeString()
+      + " " + getCodeString();
+}

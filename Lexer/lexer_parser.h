@@ -15,9 +15,9 @@ class LexerParser{
   CodeReader codeReader;
   TokenShareType  nowToken;
   std::map<std::string,compiler::KeywordType> keywordDictionary;
+  std::map<std::string,compiler::OperatorType> operatorDictionary;
 
 
-  int operatorType(char sign);
   bool isNoNumber(char sign);
   bool isNumber(char sign);
 
@@ -31,7 +31,6 @@ class LexerParser{
 
   TokenShareType getEofToken();
   TokenShareType getErrorToken();
-  TokenShareType getOperatorToken(std::pair<size_t,size_t> &position, std::string &codeString);
   TokenShareType getOperatorToken();
   TokenShareType getLToken();
   TokenShareType getIdentifierOrKeywordOrLToken();

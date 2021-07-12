@@ -17,7 +17,56 @@ enum class TokenType {
   kError,
 };
 
-
+enum class OperatorType {
+  kLeftSquareBracket = 0,
+  kRightSquareBracket,
+  kLeftBracket,
+  kRightBracket,
+  kDot,
+  kArrow,
+  kPlusPlus,
+  kMinusMinus,
+  kAmpersand,
+  kStar,
+  kPlus,
+  kMinus,
+  kTilda,
+  kExclamationPoint,
+  kSlash,
+  kPercent,
+  kDoubleArrowLeftBracket,
+  kDoubleArrowRightBracket,
+  kArrowLeftBracket,
+  kArrowRightBracket,
+  kLessOrEqual,
+  kMoreOrEqual,
+  kDoubleEqual,
+  kUnEqual,
+  kCaret,
+  kVerticalLine,
+  kDoubleAmpersand,
+  kDoubleVerticalLine,
+  kQuestionSign,
+  kColon,
+  kEqual,
+  kStarEqual,
+  kSlashEqual,
+  kPercentEqual,
+  kPlusEqual,
+  kMinusEqual,
+  kDoubleArrowLeftBracketEqual,
+  kDoubleArrowRightBracketEqual,
+  kAmpersandEqual,
+  kCaretEqual,
+  kVerticalLineEqual,
+  kComma,
+  kNumberSign,
+  kDoubleNumberSign,
+  kColonArrowRightBracket,
+  kLeftFigureBracket,
+  kRightFigureBracket,
+  kSemicolon,
+};
 
 enum class KeywordType {
   kAuto = 0,
@@ -126,6 +175,17 @@ class KeywordLexerToken: public LexerToken{
  public:
   KeywordLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, compiler::KeywordType value);
   compiler::KeywordType getValue();
+  std::string toString() override;
+
+};
+
+class OperatorLexerToken: public LexerToken{
+ private:
+  compiler::OperatorType tokenValue;
+
+ public:
+  OperatorLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, compiler::OperatorType value);
+  compiler::OperatorType getValue();
   std::string toString() override;
 
 };
