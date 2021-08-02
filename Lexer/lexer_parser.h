@@ -23,10 +23,15 @@ class LexerParser{
 
   void lineCommentSkip();
   void multiLineCommentSkip(std::pair<size_t,size_t> &position);
+
   int octalToDecimal(std::string octal);
   int octalToDecimal(char octal);
   int hexToDecimal(std::string hex);
   int hexToDecimal(char hex);
+
+  bool isOctal(char octal);
+  bool isHex(char hex);
+
   char getEscapeSequence(std::pair<size_t,size_t> position, std::string &codeString);
 
   TokenShareType getEofToken();

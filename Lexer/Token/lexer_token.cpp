@@ -63,13 +63,13 @@ std::string compiler::IntLexerToken::toString() {
 compiler::FloatLexerToken::FloatLexerToken(std::pair<size_t, size_t> position,
                                            std::string codeString,
                                            compiler::TokenType type,
-                                           float value):
+                                           double value):
                                            LexerToken(position,codeString,type),
                                            tokenValue(value){
 
 }
 
-float compiler::FloatLexerToken::getValue() {
+double compiler::FloatLexerToken::getValue() {
   return tokenValue;
 }
 

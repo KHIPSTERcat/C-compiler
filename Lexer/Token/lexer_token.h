@@ -137,11 +137,11 @@ class IntLexerToken: public LexerToken{
 
 class FloatLexerToken: public LexerToken{
  private:
-  float tokenValue;
+  double tokenValue;
 
  public:
-  FloatLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, float value);
-  float getValue();
+  FloatLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, double value);
+  double getValue();
   std::string toString() override;
 
 };

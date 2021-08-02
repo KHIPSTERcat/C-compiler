@@ -1,7 +1,10 @@
 #include "lexer_parser.h"
 
+#define KEYWORDS_COUNT 32
+#define OPERATORS_COUNT 48
+
 compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
-  std::string keywords[32] = {"auto","double","int","struct",
+  std::string keywords[KEYWORDS_COUNT] = {"auto","double","int","struct",
                               "break","else","long","switch",
                               "case","enum","register","typedef",
                               "char","extern","return","union",
@@ -9,7 +12,7 @@ compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
                               "continue","for","signed","void",
                               "default","goto","sizeof","volatile",
                               "do","if","static","while"};
-  compiler::KeywordType keywordTypes[32] = {compiler::KeywordType::kAuto, compiler::KeywordType::kDouble,
+  compiler::KeywordType keywordTypes[KEYWORDS_COUNT] = {compiler::KeywordType::kAuto, compiler::KeywordType::kDouble,
                                             compiler::KeywordType::kInt, compiler::KeywordType::kStruct,
                                             compiler::KeywordType::kBreak, compiler::KeywordType::kElse,
                                             compiler::KeywordType::kLong, compiler::KeywordType::kSwitch,
@@ -25,13 +28,13 @@ compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
                                             compiler::KeywordType::kSizeof, compiler::KeywordType::kVolatile,
                                             compiler::KeywordType::kDo, compiler::KeywordType::kIf,
                                             compiler::KeywordType::kStatic, compiler::KeywordType::kWhile};
-  std::string operators[48] = {"[", "]", "(", ")", ".", "->", "++", "--", "&", "*", "+", "-",
+  std::string operators[OPERATORS_COUNT] = {"[", "]", "(", ")", ".", "->", "++", "--", "&", "*", "+", "-",
                                "~", "!", "/", "%", "<<", ">>", "<", ">", "<=",
                                ">=", "==", "!=", "^", "|", "&&", "||", "?", ":", "=", "*=",
                                "/=", "%=", "+=", "-=", "<<=", ">>=", "&=",
                                "^=", "|=", ",", "#", "##", ":>", "{", "}", ";"};
 
-  compiler::OperatorType operatorTypes[48] = {compiler::OperatorType::kLeftSquareBracket, compiler::OperatorType::kRightSquareBracket,
+  compiler::OperatorType operatorTypes[OPERATORS_COUNT] = {compiler::OperatorType::kLeftSquareBracket, compiler::OperatorType::kRightSquareBracket,
                                               compiler::OperatorType::kLeftBracket, compiler::OperatorType::kRightBracket,
                                               compiler::OperatorType::kDot, compiler::OperatorType::kArrow,
                                               compiler::OperatorType::kPlusPlus, compiler::OperatorType::kMinusMinus,
@@ -56,10 +59,10 @@ compiler::LexerParser::LexerParser(std::string fileName):codeReader(fileName){
                                               compiler::OperatorType::kColonArrowRightBracket, compiler::OperatorType::kLeftFigureBracket,
                                               compiler::OperatorType::kRightFigureBracket, compiler::OperatorType::kSemicolon,};
 
-  for (size_t i = 0; i < 32; i++){
+  for (size_t i = 0; i < KEYWORDS_COUNT; i++){
     keywordDictionary[keywords[i]] = keywordTypes[i];
   }
-  for (size_t i = 0; i < 48; i++){
+  for (size_t i = 0; i < OPERATORS_COUNT; i++){
     operatorDictionary[operators[i]] = operatorTypes[i];
   }
 
@@ -207,6 +210,15 @@ int compiler::LexerParser::hexToDecimal(char hex) {
     return hex - 97 + 10;
   }
   return -1;
+}
+
+bool compiler::LexerParser::isOctal(char octal) {
+  return octal >= '0' && octal <= '7';
+}
+
+bool compiler::LexerParser::isHex(char hex) {
+  hex = tolower(hex);
+  return (hex >= '0' && hex <= '9') || (hex <= 'f' && hex >= 'a');
 }
 
 
@@ -469,171 +481,96 @@ compiler::TokenShareType compiler::LexerParser::getIdentifierOrKeywordOrLToken()
                                              compiler::TokenType::kIdentifier, value));
 }
 
-
 compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken() {
   return getIntOrFloatToken(codeReader.getPosition(), "");
 }
 
 compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<size_t,size_t> position, std::string codeString) {
-  bool isOctal = true;
-  std::string value = "";
+  bool isDotBefore = false;
+  bool isIntNumber = true;
+  bool isOctalNumber = false;
+  bool isHexNumber = false;
+  bool isFloatNumber = false;
 
   if (!codeString.empty()){
-    for (;isNumber(codeReader.getCodeChar());) {
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-    }
-    if (tolower(codeReader.getCodeChar()) == 'e'){
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-      if (codeReader.getCodeChar() == '+' || codeReader.getCodeChar() == '-'){
-        codeString.push_back(codeReader.getCodeChar());
-        codeReader.nextCodeChar();
-      }
-      if (isNumber(codeReader.getCodeChar())){
-        for (;isNumber(codeReader.getCodeChar());) {
-          codeString.push_back(codeReader.getCodeChar());
-          codeReader.nextCodeChar();
-        }
-      } else {
-        std::cout << "Exponent has no digits" + std::to_string(position.first) + " "
-            + std::to_string(position.second);
-        exit(1);
-      }
-    }
-    if (tolower(codeReader.getCodeChar()) == 'l' || tolower(codeReader.getCodeChar()) == 'f'){
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-    }
-    if (codeReader.getCodeChar() == '.'){
-      std::cout << "To many decimal points in number on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
-      exit(1);
-    }
-    if (isNoNumber(codeReader.getCodeChar())){
-      std::cout << "Unknown float number on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
-      exit(1);
-    }
-    return TokenShareType(new FloatLexerToken(position ,codeString,
-                                               TokenType::kFloat, std::stof(codeString)));
+    isDotBefore = true;
+    isFloatNumber = true;
+    isIntNumber = false;
   }
 
-  if (codeReader.getCodeChar() == '0'){
+  if (isIntNumber && codeReader.getCodeChar() == '0'){
     codeString.push_back(codeReader.getCodeChar());
     codeReader.nextCodeChar();
+    isIntNumber = false;
+    isOctalNumber = true;
     if (tolower(codeReader.getCodeChar()) == 'x'){
       codeString.push_back(codeReader.getCodeChar());
       codeReader.nextCodeChar();
-      if (hexToDecimal(codeReader.getCodeChar()) == -1){
-        std::cout << "Invalid int suffix on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
-        exit(1);
-      }
-      for (;hexToDecimal(codeReader.getCodeChar()) != -1;) {
-        value.push_back(codeReader.getCodeChar());
-        codeReader.nextCodeChar();
-      }
-      codeString += value;
-      if (tolower(codeReader.getCodeChar()) == 'l'){
-        codeString.push_back(codeReader.getCodeChar());
-        codeReader.nextCodeChar();
-        if (tolower(codeReader.getCodeChar()) == 'u'){
-          codeString.push_back(codeReader.getCodeChar());
-          codeReader.nextCodeChar();
-        }
-      } else {
-        if (tolower(codeReader.getCodeChar()) == 'u'){
-          codeString.push_back(codeReader.getCodeChar());
-          codeReader.nextCodeChar();
-          if (tolower(codeReader.getCodeChar()) == 'l'){
-            codeString.push_back(codeReader.getCodeChar());
-            codeReader.nextCodeChar();
-          }
-        }
-      }
-      if (isNoNumber(codeReader.getCodeChar())){
-        std::cout << "Invalid int suffix on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
-        exit(1);
-      }
-      if (codeReader.getCodeChar() == '.'){
-        std::cout << "Invalid int on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
-        exit(1);
-      }
-
-      return TokenShareType(new IntLexerToken(position ,codeString,
-                                              TokenType::kInt, hexToDecimal(value)));
-    }
-    for (;isNumber(codeReader.getCodeChar());) {
-      if (octalToDecimal(codeReader.getCodeChar()) == -1){
-        isOctal = false;
-      }
-      codeString.push_back(codeReader.getCodeChar());
-      value.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
+      isOctalNumber = false;
+      isHexNumber = true;
     }
   }
 
-  for (;isNumber(codeReader.getCodeChar());) {
-    codeString.push_back(codeReader.getCodeChar());
-    codeReader.nextCodeChar();
+  if (isOctalNumber){
+    while (isOctal(codeReader.getCodeChar()) ) {
+      codeString.push_back(codeReader.getCodeChar());
+      codeReader.nextCodeChar();
+    }
+  } else if (isHexNumber){
+    while (isHex(codeReader.getCodeChar()) ) {
+      codeString.push_back(codeReader.getCodeChar());
+      codeReader.nextCodeChar();
+    }
+  } else {
+    while (isNumber(codeReader.getCodeChar()) ) {
+      codeString.push_back(codeReader.getCodeChar());
+      codeReader.nextCodeChar();
+    }
   }
 
   if (codeReader.getCodeChar() == '.'){
-    codeString.push_back(codeReader.getCodeChar());
-    codeReader.nextCodeChar();
-    for (;isNumber(codeReader.getCodeChar());) {
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-    }
-
-    if (tolower(codeReader.getCodeChar()) == 'e'){
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-      if (codeReader.getCodeChar() == '+' || codeReader.getCodeChar() == '-'){
-        codeString.push_back(codeReader.getCodeChar());
-        codeReader.nextCodeChar();
-      }
-      if (isNumber(codeReader.getCodeChar())){
-        for (;isNumber(codeReader.getCodeChar());) {
-          codeString.push_back(codeReader.getCodeChar());
-          codeReader.nextCodeChar();
-        }
-      } else {
-        std::cout << "Exponent has no digits" + std::to_string(position.first) + " "
-            + std::to_string(position.second);
-        exit(1);
-      }
-    }
-    if (tolower(codeReader.getCodeChar()) == 'l' || tolower(codeReader.getCodeChar()) == 'f'){
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-    }
-    if (codeReader.getCodeChar() == '.'){
+    if (isDotBefore) {
       std::cout << "To many decimal points in number on " + std::to_string(position.first) + " "
           + std::to_string(position.second);
       exit(1);
+    } else {
+      if ((isOctalNumber || isHexNumber) && codeString.length() > 1){
+        std::cout << "Constants require an exponent on " + std::to_string(position.first) + " "
+            + std::to_string(position.second);
+        exit(1);
+      }
+
+      codeString.push_back(codeReader.getCodeChar());
+      codeReader.nextCodeChar();
+
+      if (!isNumber(codeReader.getCodeChar())){
+        std::cout << "No digits after  " + std::to_string(position.first) + " "
+            + std::to_string(position.second);
+        exit(1);
+      }
+
+      while (isNumber(codeReader.getCodeChar())) {
+        codeString.push_back(codeReader.getCodeChar());
+        codeReader.nextCodeChar();
+      }
     }
-    if (isNoNumber(codeReader.getCodeChar())){
-      std::cout << "Invalid float suffix on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
-      exit(1);
-    }
-    return TokenShareType(new FloatLexerToken(position ,codeString,
-                                              TokenType::kFloat, std::stof(codeString)));
+    isFloatNumber = true;
+    isIntNumber = false;
+    isOctalNumber = false;
+    isHexNumber = false;
   }
 
-  if (tolower(codeReader.getCodeChar()) == 'e'){
+  if (tolower(codeReader.getCodeChar()) == 'e') {
     codeString.push_back(codeReader.getCodeChar());
     codeReader.nextCodeChar();
-    if (codeReader.getCodeChar() == '+' || codeReader.getCodeChar() == '-'){
+
+    if (codeReader.getCodeChar() == '+' || codeReader.getCodeChar() == '-') {
       codeString.push_back(codeReader.getCodeChar());
       codeReader.nextCodeChar();
     }
-    if (isNumber(codeReader.getCodeChar())){
-      for (;isNumber(codeReader.getCodeChar());) {
+
+    if (isNumber(codeReader.getCodeChar())) {
+      while (isNumber(codeReader.getCodeChar())) {
         codeString.push_back(codeReader.getCodeChar());
         codeReader.nextCodeChar();
       }
@@ -642,60 +579,54 @@ compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<siz
           + std::to_string(position.second);
       exit(1);
     }
+
+    isFloatNumber = true;
+    isIntNumber = false;
+    isOctalNumber = false;
+    isHexNumber = false;
+  }
+
+  if (isFloatNumber){
     if (tolower(codeReader.getCodeChar()) == 'l' || tolower(codeReader.getCodeChar()) == 'f'){
       codeString.push_back(codeReader.getCodeChar());
       codeReader.nextCodeChar();
     }
-    if (codeReader.getCodeChar() == '.'){
-      std::cout << "To many decimal points in number on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
-      exit(1);
-    }
-    if (isNoNumber(codeReader.getCodeChar())){
-      std::cout << "Invalid float suffix on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
-      exit(1);
-    }
-    return TokenShareType(new FloatLexerToken(position ,codeString,
-                                              TokenType::kFloat, std::stof(codeString)));
-  }
-
-  if (tolower(codeReader.getCodeChar()) == 'l'){
-    codeString.push_back(codeReader.getCodeChar());
-    codeReader.nextCodeChar();
-    if (tolower(codeReader.getCodeChar()) == 'u'){
-      codeString.push_back(codeReader.getCodeChar());
-      codeReader.nextCodeChar();
-    }
   } else {
-    if (tolower(codeReader.getCodeChar()) == 'u'){
+    if (tolower(codeReader.getCodeChar()) == 'l'){
       codeString.push_back(codeReader.getCodeChar());
       codeReader.nextCodeChar();
-      if (tolower(codeReader.getCodeChar()) == 'l'){
+      if (tolower(codeReader.getCodeChar()) == 'u'){
         codeString.push_back(codeReader.getCodeChar());
         codeReader.nextCodeChar();
+      }
+    } else {
+      if (tolower(codeReader.getCodeChar()) == 'u'){
+        codeString.push_back(codeReader.getCodeChar());
+        codeReader.nextCodeChar();
+        if (tolower(codeReader.getCodeChar()) == 'l'){
+          codeString.push_back(codeReader.getCodeChar());
+          codeReader.nextCodeChar();
+        }
       }
     }
   }
 
-  if (codeString[0] == '0'){
-    if (isOctal){
-      return TokenShareType(new IntLexerToken(position ,codeString,
-                                              TokenType::kInt, octalToDecimal(value)));
-    } else {
-      std::cout << "Invalid octal number on " + std::to_string(position.first) + " "
+  if (codeReader.getCodeChar() == '.'){
+      std::cout << "To many decimal points in number on " + std::to_string(position.first) + " "
           + std::to_string(position.second);
       exit(1);
-    }
   }
 
-
-
   if (isNoNumber(codeReader.getCodeChar())){
-    std::cout << "Invalid int suffix on " + std::to_string(position.first) + " "
+    std::cout << "Invalid number suffix on " + std::to_string(position.first) + " "
         + std::to_string(position.second);
     exit(1);
   }
+
+  if (isFloatNumber){
+    return TokenShareType(new FloatLexerToken(position ,codeString,
+                                              TokenType::kFloat, std::stod(codeString)));
+  }
   return TokenShareType(new IntLexerToken(position ,codeString,
-                                            TokenType::kInt, std::stoi(codeString)));
+                                            TokenType::kInt, std::stoi(codeString, 0, 0)));
 }
