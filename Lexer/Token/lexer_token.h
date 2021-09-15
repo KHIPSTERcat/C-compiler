@@ -17,6 +17,11 @@ enum class TokenType {
   kError,
 };
 
+typedef struct TokenPosition{
+  size_t line, character;
+  TokenPosition(size_t line,size_t character);
+} TokenPosition;
+
 enum class OperatorType {
   kLeftSquareBracket = 0,
   kRightSquareBracket,
@@ -106,18 +111,19 @@ enum class KeywordType {
 class LexerToken{
  private:
   TokenType tokenType;
-  std::pair<size_t, size_t> tokenPosition;
+//  std::pair<size_t, size_t> tokenPosition;
+  compiler::TokenPosition tokenPosition;
   std::string tokenCodeString;
 
  protected:
   std::string typeToString();
 
  public:
-  LexerToken(std::pair<size_t, size_t> position,
+  LexerToken(compiler::TokenPosition position,
              std::string codeString,
              compiler::TokenType type);
   TokenType getType();
-  std::pair<size_t, size_t> getPosition();
+  compiler::TokenPosition getPosition();
   std::string getCodeString();
   virtual std::string toString();
 
@@ -129,7 +135,7 @@ class IntLexerToken: public LexerToken{
   int tokenValue;
 
  public:
-  IntLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, int value);
+  IntLexerToken(compiler::TokenPosition position, std::string codeString, TokenType type, int value);
   int getValue();
   std::string toString() override;
 
@@ -140,7 +146,7 @@ class FloatLexerToken: public LexerToken{
   double tokenValue;
 
  public:
-  FloatLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, double value);
+  FloatLexerToken(compiler::TokenPosition position, std::string codeString, TokenType type, double value);
   double getValue();
   std::string toString() override;
 
@@ -151,7 +157,7 @@ class StringLexerToken: public LexerToken{
   std::string tokenValue;
 
  public:
-  StringLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, std::string value);
+  StringLexerToken(compiler::TokenPosition position, std::string codeString, TokenType type, std::string value);
   std::string getValue();
   std::string toString() override;
 
@@ -162,7 +168,7 @@ class CharLexerToken: public LexerToken{
   char tokenValue;
 
  public:
-  CharLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, char value);
+  CharLexerToken(compiler::TokenPosition position, std::string codeString, TokenType type, char value);
   char getValue();
   std::string toString() override;
 
@@ -173,7 +179,7 @@ class KeywordLexerToken: public LexerToken{
   compiler::KeywordType tokenValue;
 
  public:
-  KeywordLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, compiler::KeywordType value);
+  KeywordLexerToken(compiler::TokenPosition, std::string codeString, TokenType type, compiler::KeywordType value);
   compiler::KeywordType getValue();
   std::string toString() override;
 
@@ -184,7 +190,7 @@ class OperatorLexerToken: public LexerToken{
   compiler::OperatorType tokenValue;
 
  public:
-  OperatorLexerToken(std::pair<size_t, size_t> position, std::string codeString, TokenType type, compiler::OperatorType value);
+  OperatorLexerToken(compiler::TokenPosition, std::string codeString, TokenType type, compiler::OperatorType value);
   compiler::OperatorType getValue();
   std::string toString() override;
 

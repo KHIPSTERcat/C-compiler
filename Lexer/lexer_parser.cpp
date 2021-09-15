@@ -157,7 +157,7 @@ void compiler::LexerParser::lineCommentSkip() {
   codeReader.nextCodeChar();
 }
 
-void compiler::LexerParser::multiLineCommentSkip(std::pair<size_t,size_t> &position) {
+void compiler::LexerParser::multiLineCommentSkip(compiler::TokenPosition &position) {
   while (codeReader.getCodeChar() != -1){
     codeReader.nextCodeChar();
     if (codeReader.getCodeChar() == '*'){
@@ -170,8 +170,8 @@ void compiler::LexerParser::multiLineCommentSkip(std::pair<size_t,size_t> &posit
   }
 
   if (codeReader.getCodeChar() == -1){
-    std::cout << "Not a closed comment on "+ std::to_string(position.first) + " "
-        + std::to_string(position.second) + ".";
+    std::cout << "Not a closed comment on "+ std::to_string(position.line) + " "
+        + std::to_string(position.character) + ".";
     exit(1);
   }
 }
@@ -222,13 +222,13 @@ bool compiler::LexerParser::isHex(char hex) {
 }
 
 
-char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position, std::string &codeString) {
+char compiler::LexerParser::getEscapeSequence(compiler::TokenPosition position, std::string &codeString) {
   std::string escapeSequence = "";
   escapeSequence.push_back(codeReader.getCodeChar());
   codeString.push_back(codeReader.getCodeChar());
   if (codeReader.getCodeChar() != '\\') {
-    std::cout << "Unknown escape sequence: " + escapeSequence + "on " + std::to_string(position.first) + " "
-        + std::to_string(position.second);
+    std::cout << "Unknown escape sequence: " + escapeSequence + "on " + std::to_string(position.line) + " "
+        + std::to_string(position.character);
     exit(1);
   }
 
@@ -288,8 +288,8 @@ char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position
 
         if (hexToDecimal(codeReader.getCodeChar()) == -1){
           if (!i){
-            std::cout << escapeSequence + "used with no following hex digits on " + std::to_string(position.first) + " "
-                + std::to_string(position.second) ;
+            std::cout << escapeSequence + "used with no following hex digits on " + std::to_string(position.line) + " "
+                + std::to_string(position.character) ;
             exit(1);
           }
 
@@ -302,8 +302,8 @@ char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position
       escapeSequence += hexNumber;
       int hexInt = hexToDecimal(hexNumber);
       if (hexInt < 0  || hexInt > 128){
-        std::cout << escapeSequence << "out of range on " << position.first << " "
-            << std::to_string(position.second) ;
+        std::cout << escapeSequence << "out of range on " << position.line << " "
+            << std::to_string(position.character) ;
         exit(1);
       }
       return char(hexInt);
@@ -316,8 +316,8 @@ char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position
         for (size_t i = 0; i < 2; i++){
           if (hexToDecimal(codeReader.getCodeChar()) == -1){
             if (!i){
-              std::cout << escapeSequence + "used with no following octal digits on " + std::to_string(position.first) + " "
-                  + std::to_string(position.second) ;
+              std::cout << escapeSequence + "used with no following octal digits on " + std::to_string(position.line) + " "
+                  + std::to_string(position.character) ;
               exit(1);
             }
 
@@ -330,16 +330,16 @@ char compiler::LexerParser::getEscapeSequence(std::pair<size_t, size_t> position
         }
         int octalInt = octalToDecimal(octalNumber);
         if (octalInt < 0  || octalInt > 128){
-          std::cout << escapeSequence + "out of range on " + std::to_string(position.first) + " "
-              + std::to_string(position.second) ;
+          std::cout << escapeSequence + "out of range on " + std::to_string(position.line) + " "
+              + std::to_string(position.character) ;
           exit(1);
         }
 
 
         return char(octalInt);
       }
-      std::cout << "Unknown escape sequence: " + escapeSequence + " on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "Unknown escape sequence: " + escapeSequence + " on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     }
   }
@@ -359,10 +359,10 @@ compiler::TokenShareType compiler::LexerParser::getCharToken() {
 }
 
 
-compiler::TokenShareType compiler::LexerParser::getCharToken(std::pair<size_t, size_t> position, std::string codeString) {
+compiler::TokenShareType compiler::LexerParser::getCharToken(compiler::TokenPosition position, std::string codeString) {
   if (codeReader.getCodeChar() != '\''){
-    std::cout << "Unknown constant char on " + std::to_string(position.first) + " "
-        + std::to_string(position.second);
+    std::cout << "Unknown constant char on " + std::to_string(position.line) + " "
+        + std::to_string(position.character);
     exit(1);
   }
   codeString.push_back(codeReader.getCodeChar());
@@ -370,23 +370,23 @@ compiler::TokenShareType compiler::LexerParser::getCharToken(std::pair<size_t, s
   char value;
   switch (codeReader.getCodeChar()) {
     case '\'':{
-      std::cout << "Empty constant char on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "Empty constant char on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     }
     case '\n':{
-      std::cout << "Unknown constant char on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "Unknown constant char on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     }
     case -1:{
-      std::cout << "Unknown constant char on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "Unknown constant char on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     }
     case '/':{
-      std::cout << "Unknown constant char on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "Unknown constant char on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     }
     case '\\':{
@@ -407,8 +407,8 @@ compiler::TokenShareType compiler::LexerParser::getCharToken(std::pair<size_t, s
     return TokenShareType(new CharLexerToken(position ,codeString,
                                                compiler::TokenType::kChar, value));
   }
-  std::cout << "Multi-char constant char on " + std::to_string(position.first) + " "
-      + std::to_string(position.second);
+  std::cout << "Multi-char constant char on " + std::to_string(position.line) + " "
+      + std::to_string(position.character);
   exit(1);
 }
 
@@ -417,10 +417,10 @@ compiler::TokenShareType compiler::LexerParser::getStringToken() {
 }
 
 
-compiler::TokenShareType compiler::LexerParser::getStringToken(std::pair<size_t, size_t> position, std::string codeString) {
+compiler::TokenShareType compiler::LexerParser::getStringToken(compiler::TokenPosition position, std::string codeString) {
   if (codeReader.getCodeChar() != '\"'){
-    std::cout << "Unknown string on " + std::to_string(position.first) + " "
-        + std::to_string(position.second);
+    std::cout << "Unknown string on " + std::to_string(position.line) + " "
+        + std::to_string(position.character);
     exit(1);
   }
   codeString.push_back(codeReader.getCodeChar());
@@ -429,13 +429,13 @@ compiler::TokenShareType compiler::LexerParser::getStringToken(std::pair<size_t,
   for (;codeReader.getCodeChar() != '\"';){
     switch (codeReader.getCodeChar()) {
       case '\n':{
-        std::cout << "Unknown string on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
+        std::cout << "Unknown string on " + std::to_string(position.line) + " "
+            + std::to_string(position.character);
         exit(1);
       }
       case -1:{
-        std::cout << "Unknown string on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
+        std::cout << "Unknown string on " + std::to_string(position.line) + " "
+            + std::to_string(position.character);
         exit(1);
       }
       case '\\':{
@@ -485,7 +485,7 @@ compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken() {
   return getIntOrFloatToken(codeReader.getPosition(), "");
 }
 
-compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<size_t,size_t> position, std::string codeString) {
+compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(compiler::TokenPosition position, std::string codeString) {
   bool isDotBefore = false;
   bool isIntNumber = true;
   bool isOctalNumber = false;
@@ -530,13 +530,13 @@ compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<siz
 
   if (codeReader.getCodeChar() == '.'){
     if (isDotBefore) {
-      std::cout << "To many decimal points in number on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "To many decimal points in number on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     } else {
       if ((isOctalNumber || isHexNumber) && codeString.length() > 1){
-        std::cout << "Constants require an exponent on " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
+        std::cout << "Constants require an exponent on " + std::to_string(position.line) + " "
+            + std::to_string(position.character);
         exit(1);
       }
 
@@ -544,8 +544,8 @@ compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<siz
       codeReader.nextCodeChar();
 
       if (!isNumber(codeReader.getCodeChar())){
-        std::cout << "No digits after  " + std::to_string(position.first) + " "
-            + std::to_string(position.second);
+        std::cout << "No digits after  " + std::to_string(position.line) + " "
+            + std::to_string(position.character);
         exit(1);
       }
 
@@ -575,8 +575,8 @@ compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<siz
         codeReader.nextCodeChar();
       }
     } else {
-      std::cout << "Exponent has no digits" + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "Exponent has no digits" + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
     }
 
@@ -612,14 +612,14 @@ compiler::TokenShareType compiler::LexerParser::getIntOrFloatToken(std::pair<siz
   }
 
   if (codeReader.getCodeChar() == '.'){
-      std::cout << "To many decimal points in number on " + std::to_string(position.first) + " "
-          + std::to_string(position.second);
+      std::cout << "To many decimal points in number on " + std::to_string(position.line) + " "
+          + std::to_string(position.character);
       exit(1);
   }
 
   if (isNoNumber(codeReader.getCodeChar())){
-    std::cout << "Invalid number suffix on " + std::to_string(position.first) + " "
-        + std::to_string(position.second);
+    std::cout << "Invalid number suffix on " + std::to_string(position.line) + " "
+        + std::to_string(position.character);
     exit(1);
   }
 

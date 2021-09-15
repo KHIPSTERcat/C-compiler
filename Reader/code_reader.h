@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "../Lexer/Token/lexer_token.h"
 
 namespace compiler{
 
@@ -13,7 +14,7 @@ class CodeReader{
   std::string fileName;
   size_t buffSize;
   size_t readSize;
-  size_t stringPosition;
+  size_t linePosition;
   size_t charPosition;
   char* buff;
   FILE *file;
@@ -26,7 +27,7 @@ class CodeReader{
   char getCodeChar();
   void nextCodeChar();
   void nextSignificantChar();
-  std::pair<size_t, size_t> getPosition();
+  compiler::TokenPosition getPosition();
   ~CodeReader();
 };
 

@@ -22,7 +22,7 @@ class LexerParser{
   bool isNumber(char sign);
 
   void lineCommentSkip();
-  void multiLineCommentSkip(std::pair<size_t,size_t> &position);
+  void multiLineCommentSkip(compiler::TokenPosition &position);
 
   int octalToDecimal(std::string octal);
   int octalToDecimal(char octal);
@@ -32,19 +32,19 @@ class LexerParser{
   bool isOctal(char octal);
   bool isHex(char hex);
 
-  char getEscapeSequence(std::pair<size_t,size_t> position, std::string &codeString);
+  char getEscapeSequence(compiler::TokenPosition position, std::string &codeString);
 
   TokenShareType getEofToken();
   TokenShareType getErrorToken();
   TokenShareType getOperatorToken();
   TokenShareType getLToken();
   TokenShareType getIdentifierOrKeywordOrLToken();
-  TokenShareType getCharToken(std::pair<size_t,size_t> position, std::string codeString);
+  TokenShareType getCharToken(compiler::TokenPosition position, std::string codeString);
   TokenShareType getCharToken();
-  TokenShareType getStringToken(std::pair<size_t,size_t> position, std::string codeString);
+  TokenShareType getStringToken(compiler::TokenPosition position, std::string codeString);
   TokenShareType getStringToken();
   TokenShareType getIntOrFloatToken();
-  TokenShareType getIntOrFloatToken(std::pair<size_t,size_t> position, std::string codeString);
+  TokenShareType getIntOrFloatToken(compiler::TokenPosition position, std::string codeString);
 
  public:
   LexerParser(std::string fileName);
