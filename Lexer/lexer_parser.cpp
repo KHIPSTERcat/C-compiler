@@ -177,41 +177,6 @@ void compiler::LexerParser::multiLineCommentSkip(compiler::TokenPosition &positi
 }
 
 
-int compiler::LexerParser::octalToDecimal(std::string octal) {
-  int result = 0;
-  for (auto i : octal){
-    result *= 8;
-    result += octalToDecimal(i);
-  }
-  return result;
-}
-
-int compiler::LexerParser::octalToDecimal(char octal) {
-  if (octal >= '0' && octal <= '7'){
-    return octal - 48;
-  }
-  return -1;
-}
-
-int compiler::LexerParser::hexToDecimal(std::string hex) {
-  int result = 0;
-  for (auto i : hex){
-    result *= 16;
-    result += hexToDecimal(i);
-  }
-  return result;
-}
-
-int compiler::LexerParser::hexToDecimal(char hex) {
-  hex = tolower(hex);
-  if (hex >= '0' && hex <= '9'){
-    return hex - 48;
-  } else if (hex <= 'f' && hex >= 'a'){
-    return hex - 97 + 10;
-  }
-  return -1;
-}
-
 bool compiler::LexerParser::isOctal(char octal) {
   return octal >= '0' && octal <= '7';
 }
@@ -286,7 +251,7 @@ char compiler::LexerParser::getEscapeSequence(compiler::TokenPosition position, 
       for (size_t i = 0; i < 3; i++){
 
 
-        if (hexToDecimal(codeReader.getCodeChar()) == -1){
+        if (!isHex(codeReader.getCodeChar())){
           if (!i){
             std::cout << escapeSequence + "used with no following hex digits on " + std::to_string(position.line) + " "
                 + std::to_string(position.character) ;
@@ -300,7 +265,7 @@ char compiler::LexerParser::getEscapeSequence(compiler::TokenPosition position, 
       }
       codeString += hexNumber;
       escapeSequence += hexNumber;
-      int hexInt = hexToDecimal(hexNumber);
+      int hexInt = std::stoi(hexNumber, 0, 16);
       if (hexInt < 0  || hexInt > 128){
         std::cout << escapeSequence << "out of range on " << position.line << " "
             << std::to_string(position.character) ;
@@ -309,12 +274,12 @@ char compiler::LexerParser::getEscapeSequence(compiler::TokenPosition position, 
       return char(hexInt);
     }
     default:{
-      if (octalToDecimal(codeReader.getCodeChar()) != -1){
+      if (isOctal(codeReader.getCodeChar())){
         std::string octalNumber = "";
         octalNumber.push_back(codeReader.getCodeChar());
         codeReader.nextCodeChar();
         for (size_t i = 0; i < 2; i++){
-          if (hexToDecimal(codeReader.getCodeChar()) == -1){
+          if (!isOctal(codeReader.getCodeChar())){
             if (!i){
               std::cout << escapeSequence + "used with no following octal digits on " + std::to_string(position.line) + " "
                   + std::to_string(position.character) ;
@@ -328,7 +293,7 @@ char compiler::LexerParser::getEscapeSequence(compiler::TokenPosition position, 
           octalNumber.push_back(codeReader.getCodeChar());
           codeReader.nextCodeChar();
         }
-        int octalInt = octalToDecimal(octalNumber);
+        int octalInt = std::stoi(octalNumber, 0, 8);
         if (octalInt < 0  || octalInt > 128){
           std::cout << escapeSequence + "out of range on " + std::to_string(position.line) + " "
               + std::to_string(position.character) ;

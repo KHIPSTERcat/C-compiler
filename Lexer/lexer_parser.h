@@ -24,11 +24,6 @@ class LexerParser{
   void lineCommentSkip();
   void multiLineCommentSkip(compiler::TokenPosition &position);
 
-  int octalToDecimal(std::string octal);
-  int octalToDecimal(char octal);
-  int hexToDecimal(std::string hex);
-  int hexToDecimal(char hex);
-
   bool isOctal(char octal);
   bool isHex(char hex);
 
